@@ -1,26 +1,32 @@
+import { connect } from "react-redux";
+import { Redirect } from 'react-router-dom';
 import styled from "styled-components";
+import {signInAPI} from "../actions"
 
 const Login = (props) => {
   return (
     <Container>
+      
+      { props.user && <Redirect to="/Home" /> }
+
       <Nav>
         <a href="/">
           <img src="/images/login-logo.svg" alt="" />
         </a>
         <div>
           <Join>Join now</Join>
-          <SignIn>Sign in</SignIn>
+          <SignIn onClick={() =>props.signIn()}>Sign in</SignIn>
         </div>
       </Nav>
       <Section>
         <Hero>
-          <h1>Welcome to your professional community</h1>
-          <img src="/images/login-hero.svg" alt="" />
+          <h1> Welcome to your professional community </h1>
+          <img src="/images/login-hero2.svg" alt="" />
         </Hero>
         <Form>
-          <Google>
+          <Google onClick={() =>props.signIn()}>
             <img src="/images/google.svg" alt="" />
-            Sign in with Google
+            <h3>Sign in with Google</h3>
           </Google>
         </Form>
       </Section>
@@ -109,8 +115,8 @@ const Hero = styled.div`
     padding-bottom: 0;
     width: 55%;
     font-size: 56px;
-    color: #2977c9;
-    font-weight: 200;
+    color: #8f5849;
+    font-weight: 100;
     line-height: 70px;
     @media (max-width: 768px) {
       text-align: center;
@@ -166,4 +172,14 @@ const Google = styled.button`
   }
 `;
 
-export default Login;
+const mapStateToProps = (state) => {
+  return {
+    user: state.userState.user,
+  };
+};
+
+const mapDispatchToProps = (dispatch) => ({
+  signIn: () => dispatch(signInAPI()),
+})
+
+export default connect(mapStateToProps, mapDispatchToProps)(Login);
