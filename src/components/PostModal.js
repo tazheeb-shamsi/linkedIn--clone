@@ -1,9 +1,16 @@
 import React, { useState } from "react";
 import styled from "styled-components";
+import ReactPlayer from "react-player";
+import { connect } from 'react-redux';
+import firebase from 'firebase';
+import { postArticleAPI } from "../actions";
+
 
 const PostModal = (props) => {
   const [textEditor, setTextEditor] = useState("");
   const [shareImage, setShareImage] = useState("");
+  const [videoLink, setVideoLink] = useState("");
+  const [assetArea, setAssetArea] = useState("");
 
   const handleChange = (e) => {
     const image = e.target.files[0];
@@ -12,10 +19,39 @@ const PostModal = (props) => {
         return;
       }
       setShareImage(image);
+  };
+
+  const switchAssetArea =  (area) => {
+    setShareImage("");
+    setVideoLink("");
+    setAssetArea(area);
   }
+
+  const postArticle = (e) =>{ 
+    console.log("hello!!")
+    e.preventDefault();
+    if (e.target !== e.currentTarget){
+      console.log("world?")
+      return;
+    };
+
+    const payload = {
+      image: shareImage,
+      video: videoLink,
+      user: props.user,
+      description: textEditor,
+      timestamp: firebase.firestore.Timestamp.now(),
+    };
+    props.postArticle(payload);
+    reset(e);
+  }
+
 
   const reset = (e) => {
     setTextEditor("");
+    setShareImage("");
+    setVideoLink("");
+    setAssetArea("");
     props.handleClick(e);
   };
 
@@ -30,10 +66,16 @@ const PostModal = (props) => {
                 <img src="/images/close-icon.svg" alt="" />
               </button>
             </Header>
+
             <SharedContent>
+
               <UserInfo>
+                {props.user.photoURL ? (
+                <img src={props.user.photoURL}/>
+                ):(
                 <img src="/images/user.svg" alt="" />
-                <span>Name</span>
+                )}
+                <span>{props.user.displayName}</span>
               </UserInfo>
 
               <Editor>
@@ -42,6 +84,8 @@ const PostModal = (props) => {
                   onChange={(e) => setTextEditor(e.target.value)}
                   placeholder="What do you want to talk about?"
                   autoFocus={true}/>
+
+              {   assetArea === 'image' ?
               <UploadImage>
                 <input type= "file" 
                 accept= "image/png, image/jpeg, image/gif"
@@ -55,15 +99,25 @@ const PostModal = (props) => {
               </p>
               {shareImage && <img src={URL.createObjectURL(shareImage)}/>}
               </UploadImage>
+              : assetArea === 'media' &&
+              <>
+              <input type="text" 
+              placeholder="Please Input video link"
+              value={videoLink}
+              onChange={(e) => setVideoLink(e.target.value)} />
+              {videoLink && <ReactPlayer width={"100%"} url = {videoLink} />}
+              </>
+              }
+             
               </Editor>
             </SharedContent>
 
             <ShareCreation>
               <AttachAssets>
-                <AssetButton>
+                <AssetButton onClick={() => switchAssetArea('image')}>
                   <img src="/images/picture-icon.svg" alt="" />
                 </AssetButton>
-                <AssetButton>
+                <AssetButton onClick={() => switchAssetArea('media')}>
                   <img src="/images/video-icon.svg" alt="" />
                 </AssetButton>
               </AttachAssets>
@@ -75,7 +129,8 @@ const PostModal = (props) => {
                 </AssetButton>
               </ShareComment>
 
-              <PostButton disabled={!textEditor ? true : false}>
+              <PostButton disabled={!textEditor ? true : false}
+              onClick = {(event) => postArticle(event)}>
                 Post
               </PostButton>
             </ShareCreation>
@@ -237,4 +292,14 @@ img{
 }
 `;
 
-export default PostModal;
+
+const mapStateToProps = (state) => {
+return{
+  user: state.userState.user,
+}
+};
+const mapDispatchToProps = (dispatch) => ({
+postArticle: (payload) => dispatch(postArticleAPI(payload)),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(PostModal);
