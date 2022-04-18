@@ -5,12 +5,17 @@ import BusinessCenterIcon from "@mui/icons-material/BusinessCenter";
 import NewspaperIcon from "@mui/icons-material/Newspaper";
 
 import PostModal from "./PostModal";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { connect } from 'react-redux';
+import { getArticleAPI } from "../actions";
 
 const Main = (props) => {
-
   const [showModal, setShowModal] = useState("close");
-  
+
+  useEffect(() =>{
+    props.getArticles()
+  }, []);
+
   const handleClick = (e) => {
     e.preventDefault();
     if (e.target !== e.currentTarget) {
@@ -34,8 +39,15 @@ const Main = (props) => {
     <Container>
       <ShareBox style={{ paddingTop: "10px" }}>
         <div>
-          <img src="/images/user.svg" alt="avatar" />
-          <button onClick={handleClick}> Start a post </button>
+          {props.user && props.user.photoURL ? (
+            <img src={props.user.photoURL} />
+          ) : (
+            <img src="/images/user.svg" alt="avatar" />
+          )}
+          <button onClick={handleClick} disabled={props.loading ? true : false}>
+            {" "}
+            Start a post{" "}
+          </button>
         </div>
 
         <div>
@@ -48,23 +60,28 @@ const Main = (props) => {
             <span>Video</span>
           </button>
           <button>
-            <BusinessCenterIcon style={{ color: "rgb(168 212 255)" }} />
+            <BusinessCenterIcon 
+            style={{ color: "rgb(168 212 255)" }} />
             <span>Job</span>
           </button>
           <button>
-            <NewspaperIcon style={{ color: "rgb(252 146 149)" }} />
+            <NewspaperIcon 
+            style={{ color: "rgb(252 146 149)" }} />
             <span>Write article</span>
           </button>
         </div>
       </ShareBox>
-      <div>
+      <Content>
+        {props.loading && 
+        <img src="images/loading-spinner.svg" />}
+
         <Article>
           <ShareActor>
             <a>
               <img src="/images/user.svg" alt="" />
               <div>
-                <span>Title</span>
-                <span>Info</span>
+                <span>{props.user.displayName}</span>
+                <span>{props.user.email}</span>
                 <span>Date</span>
               </div>
             </a>
@@ -122,7 +139,7 @@ const Main = (props) => {
             </button>
           </SocialActions>
         </Article>
-      </div>
+      </Content>
       <PostModal showModal={showModal} handleClick={handleClick} />
     </Container>
   );
@@ -330,4 +347,23 @@ const SocialActions = styled.div`
   }
 `;
 
-export default Main;
+const Content = styled.div`
+text-align: center;
+&>img{
+  width: 30px;
+
+}
+`;
+
+const mapStateToProps = (state) => {
+  return{
+    loading: state.articleState.loading,
+    user: state.userState.user,
+  }
+}
+
+const mapDispatchToProps = (dispatch) => ({
+ getArticles: () => dispatch(getArticleAPI())
+})
+
+export default connect(mapStateToProps, mapDispatchToProps)(Main);
