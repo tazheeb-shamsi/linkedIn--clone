@@ -38,48 +38,55 @@ const Main = (props) => {
 
   return (
     <>
-      
-        <Container>
-          <ShareBox style={{ paddingTop: "10px" }}>
-            <div>
-              {props.user && props.user.photoURL ? (
-                <img src={props.user.photoURL} />
-              ) : (
-                <img src="/images/user.svg" alt="avatar" />
-              )}
-              <button
-                onClick={handleClick}
-                disabled={props.loading ? true : false}
-              >
-                {" "}
-                Start a post{" "}
-              </button>
-            </div>
+      <Container>
+        <ShareBox style={{ paddingTop: "10px" }}>
+          <div>
+            {props.user && props.user.photoURL ? (
+              <img src={props.user.photoURL} />
+            ) : (
+              <img src="/images/user.svg" alt="avatar" />
+            )}
+            <button
+              onClick={handleClick}
+              disabled={props.loading ? true : false}
+            >
+              {" "}
+              Start a post{" "}
+            </button>
+          </div>
 
-            <div>
-              <button>
-                <ImageIcon style={{ color: "rgb(112 181 249)" }} />
-                <span>Photo</span>
-              </button>
-              <button>
-                <SubscriptionsIcon style={{ color: "rgb(127 193 94)" }} />
-                <span>Video</span>
-              </button>
-              <button>
-                <BusinessCenterIcon style={{ color: "rgb(168 212 255)" }} />
-                <span>Job</span>
-              </button>
-              <button>
-                <NewspaperIcon style={{ color: "rgb(252 146 149)" }} />
-                <span>Write article</span>
-              </button>
-            </div>
-          </ShareBox>
-          {props.articles.length === 0 ? (
-        <p style={{display:'flex',alignItems: 'center',justifyContent: 'center'}}>There is no articles to go through</p>
-      ) : (
+          <div>
+            <button>
+              <ImageIcon style={{ color: "rgb(112 181 249)" }} />
+              <span>Photo</span>
+            </button>
+            <button>
+              <SubscriptionsIcon style={{ color: "rgb(127 193 94)" }} />
+              <span>Video</span>
+            </button>
+            <button>
+              <BusinessCenterIcon style={{ color: "rgb(168 212 255)" }} />
+              <span>Job</span>
+            </button>
+            <button>
+              <NewspaperIcon style={{ color: "rgb(252 146 149)" }} />
+              <span>Write article</span>
+            </button>
+          </div>
+        </ShareBox>
+        {props.articles.length === 0 ? (
+          <p
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            There is no articles to go through
+          </p>
+        ) : (
           <Content>
-            {props.loading && <img src="images/loading-spinner.svg" />}
+            {props.loading && <img  src="images/loading-spinner.svg" />}
             {props.articles.length > 0 &&
               props.articles.map((article, key) => (
                 <Article key={key}>
@@ -95,18 +102,17 @@ const Main = (props) => {
                       </div>
                     </a>
                     <button>
-                      <img src="/images/ellipsis-svg.svg" alt="" />
+                      <img style={{width:"20px", height:"20px", fontWeight:"1 00", marginTop:"5px"}} src="/images/ellipsis-svg.svg" alt="" />
                     </button>
                   </ShareActor>
                   <Description>{article.description}</Description>
                   <ShareImg>
                     <a>
-                     {
-                     !article.sharedImg && article.video ?( 
-                     <ReactPlayer width={'100%'} url ={article.video}/>
-                     ):(
-                       article.sharedImg && <img src={article.sharedImg}/>
-                     )}
+                      {!article.sharedImg && article.video ? (
+                        <ReactPlayer width={"100%"} url={article.video} />
+                      ) : (
+                        article.sharedImg && <img src={article.sharedImg} />
+                      )}
                     </a>
                   </ShareImg>
                   <SocialCounts>
@@ -158,10 +164,9 @@ const Main = (props) => {
                 </Article>
               ))}
           </Content>
-      )}
-          <PostModal showModal={showModal} handleClick={handleClick} />
-        </Container>
-      
+        )}
+        <PostModal showModal={showModal} handleClick={handleClick} />
+      </Container>
     </>
   );
 };
@@ -329,6 +334,8 @@ const SocialCounts = styled.ul`
     font-size: 12px;
     button {
       display: flex;
+      border: none;
+      background-color:white;
       img {
         height: 20px;
         width: 20px;
@@ -351,6 +358,8 @@ const SocialActions = styled.div`
     padding: 8px;
     color: #0a66c2;
     cursor: pointer;
+    border: none;
+    background-color:white;
 
     img {
       width: 20px;
