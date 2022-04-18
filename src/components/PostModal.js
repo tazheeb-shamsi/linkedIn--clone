@@ -28,10 +28,8 @@ const PostModal = (props) => {
   }
 
   const postArticle = (e) =>{ 
-    console.log("hello!!")
     e.preventDefault();
     if (e.target !== e.currentTarget){
-      console.log("world?")
       return;
     };
 

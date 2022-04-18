@@ -1,5 +1,5 @@
 import { auth, provider, storage } from "../firebase";
-import { SET_LOADING_STATUS, SET_USER } from "./actionType";
+import { SET_LOADING_STATUS, SET_USER, GET_ARTICLES } from "./actionType";
 import db from "../firebase";
 
 export const setUser = (payload) => ({
@@ -10,6 +10,11 @@ export const setUser = (payload) => ({
 export const setLoading = (status) => ({
   type: SET_LOADING_STATUS,
   status: status,
+});
+
+export const getArticles = (payload ) => ({
+  type: GET_ARTICLES,
+  payload: payload,
 });
 
 export function signInAPI() {
@@ -69,8 +74,8 @@ export function postArticleAPI(payload) {
           const downloadURL = await upload.snapshot.ref.getDownloadURL();
           db.collection("articles").add({
             actor: {
+              title: payload.user.displayName,
               description: payload.user.email,
-              tile: payload.user.displayName,
               date: payload.timestamp,
               image: payload.user.photoURL,
             },
@@ -85,8 +90,8 @@ export function postArticleAPI(payload) {
     } else if (payload.video) {
       db.collection("articles").add({
         actor: {
+          title: payload.user.displayName,
           description: payload.user.email,
-          tile: payload.user.displayName,
           date: payload.timestamp,
           image: payload.user.photoURL,
         },
@@ -108,7 +113,7 @@ export function getArticleAPI() {
       .orderBy("actor.date", "desc")
       .onSnapshot((snapshot) => {
         payload = snapshot.docs.map((doc) => doc.data());
-        console.log("payload");
+        dispatch(getArticles(payload));
       });
   };
 }

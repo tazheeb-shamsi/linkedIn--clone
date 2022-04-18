@@ -6,14 +6,15 @@ import NewspaperIcon from "@mui/icons-material/Newspaper";
 
 import PostModal from "./PostModal";
 import { useEffect, useState } from "react";
-import { connect } from 'react-redux';
+import { connect } from "react-redux";
 import { getArticleAPI } from "../actions";
+import ReactPlayer from "react-player";
 
 const Main = (props) => {
   const [showModal, setShowModal] = useState("close");
 
-  useEffect(() =>{
-    props.getArticles()
+  useEffect(() => {
+    props.getArticles();
   }, []);
 
   const handleClick = (e) => {
@@ -36,112 +37,132 @@ const Main = (props) => {
   };
 
   return (
-    <Container>
-      <ShareBox style={{ paddingTop: "10px" }}>
-        <div>
-          {props.user && props.user.photoURL ? (
-            <img src={props.user.photoURL} />
-          ) : (
-            <img src="/images/user.svg" alt="avatar" />
-          )}
-          <button onClick={handleClick} disabled={props.loading ? true : false}>
-            {" "}
-            Start a post{" "}
-          </button>
-        </div>
-
-        <div>
-          <button>
-            <ImageIcon style={{ color: "rgb(112 181 249)" }} />
-            <span>Photo</span>
-          </button>
-          <button>
-            <SubscriptionsIcon style={{ color: "rgb(127 193 94)" }} />
-            <span>Video</span>
-          </button>
-          <button>
-            <BusinessCenterIcon 
-            style={{ color: "rgb(168 212 255)" }} />
-            <span>Job</span>
-          </button>
-          <button>
-            <NewspaperIcon 
-            style={{ color: "rgb(252 146 149)" }} />
-            <span>Write article</span>
-          </button>
-        </div>
-      </ShareBox>
-      <Content>
-        {props.loading && 
-        <img src="images/loading-spinner.svg" />}
-
-        <Article>
-          <ShareActor>
-            <a>
-              <img src="/images/user.svg" alt="" />
-              <div>
-                <span>{props.user.displayName}</span>
-                <span>{props.user.email}</span>
-                <span>Date</span>
-              </div>
-            </a>
-            <button>
-              <img src="/images/ellipsis-svg.svg" alt="" />
-            </button>
-          </ShareActor>
-          <Description>Description</Description>
-          <ShareImg>
-            <a>
-              <img src="/images/img1.jpg" alt="" />
-            </a>
-          </ShareImg>
-          <SocialCounts>
-            <li>
-              <button>
-                <img src="/images/Linkedin-Like-Icon.png" alt="like" />
-                <img
-                  src="/images/Linkedin-Celebrate-Icon.png"
-                  alt="celebrate"
-                />
-                <img src="/images/Linkedin-Support-Icon.png" alt="support" />
-                <img src="/images/Linkedin-Love-Icon.png" alt="love" />
-                <img
-                  src="/images/Linkedin-Insightful-Icon.png"
-                  alt="insightful"
-                />
-                {/* <img src="/images/Linkedin-Curious-Icon.png" alt="curious" /> */}
-                <span>75</span>
+    <>
+      
+        <Container>
+          <ShareBox style={{ paddingTop: "10px" }}>
+            <div>
+              {props.user && props.user.photoURL ? (
+                <img src={props.user.photoURL} />
+              ) : (
+                <img src="/images/user.svg" alt="avatar" />
+              )}
+              <button
+                onClick={handleClick}
+                disabled={props.loading ? true : false}
+              >
+                {" "}
+                Start a post{" "}
               </button>
-            </li>
-            <li>
-              <a>2 Comments</a>
-            </li>
-          </SocialCounts>
-          <SocialActions>
-            <button>
-              <img src="/images/Linkedin-Like-Icon.png" alt="" />
-              <span>Like</span>
-            </button>
+            </div>
 
-            <button>
-              <img src="/images/comment.svg" alt="" />
-              <span>Comment</span>
-            </button>
+            <div>
+              <button>
+                <ImageIcon style={{ color: "rgb(112 181 249)" }} />
+                <span>Photo</span>
+              </button>
+              <button>
+                <SubscriptionsIcon style={{ color: "rgb(127 193 94)" }} />
+                <span>Video</span>
+              </button>
+              <button>
+                <BusinessCenterIcon style={{ color: "rgb(168 212 255)" }} />
+                <span>Job</span>
+              </button>
+              <button>
+                <NewspaperIcon style={{ color: "rgb(252 146 149)" }} />
+                <span>Write article</span>
+              </button>
+            </div>
+          </ShareBox>
+          {props.articles.length === 0 ? (
+        <p style={{display:'flex',alignItems: 'center',justifyContent: 'center'}}>There is no articles to go through</p>
+      ) : (
+          <Content>
+            {props.loading && <img src="images/loading-spinner.svg" />}
+            {props.articles.length > 0 &&
+              props.articles.map((article, key) => (
+                <Article key={key}>
+                  <ShareActor>
+                    <a>
+                      <img src={article.actor.image} alt="" />
+                      <div>
+                        <span>{article.actor.title}</span>
+                        <span>{article.actor.description}</span>
+                        <span>
+                          {/* {article.actor.toDate().toLocaleDateString()} */}
+                        </span>
+                      </div>
+                    </a>
+                    <button>
+                      <img src="/images/ellipsis-svg.svg" alt="" />
+                    </button>
+                  </ShareActor>
+                  <Description>{article.description}</Description>
+                  <ShareImg>
+                    <a>
+                     {
+                     !article.sharedImg && article.video ?( 
+                     <ReactPlayer width={'100%'} url ={article.video}/>
+                     ):(
+                       article.sharedImg && <img src={article.sharedImg}/>
+                     )}
+                    </a>
+                  </ShareImg>
+                  <SocialCounts>
+                    <li>
+                      <button>
+                        <img src="/images/Linkedin-Like-Icon.png" alt="like" />
+                        <img
+                          src="/images/Linkedin-Celebrate-Icon.png"
+                          alt="celebrate"
+                        />
+                        <img
+                          src="/images/Linkedin-Support-Icon.png"
+                          alt="support"
+                        />
+                        <img src="/images/Linkedin-Love-Icon.png" alt="love" />
+                        <img
+                          src="/images/Linkedin-Insightful-Icon.png"
+                          alt="insightful"
+                        />
+                        {/* <img src="/images/Linkedin-Curious-Icon.png" alt="curious" /> */}
+                        <span>75</span>
+                      </button>
+                    </li>
+                    <li>
+                      <a>{article.comments}</a>
+                    </li>
+                  </SocialCounts>
+                  <SocialActions>
+                    <button>
+                      <img src="/images/Linkedin-Like-Icon.png" alt="" />
+                      <span>Like</span>
+                    </button>
 
-            <button>
-              <img src="/images/share.svg" alt="" />
-              <span>Share</span>
-            </button>
+                    <button>
+                      <img src="/images/comment.svg" alt="" />
+                      <span>Comment</span>
+                    </button>
 
-            <button>
-              <img src="/images/send.svg" alt="" />
-              <span>Send</span>
-            </button>
-          </SocialActions>
-        </Article>
-      </Content>
-      <PostModal showModal={showModal} handleClick={handleClick} />
-    </Container>
+                    <button>
+                      <img src="/images/share.svg" alt="" />
+                      <span>Share</span>
+                    </button>
+
+                    <button>
+                      <img src="/images/send.svg" alt="" />
+                      <span>Send</span>
+                    </button>
+                  </SocialActions>
+                </Article>
+              ))}
+          </Content>
+      )}
+          <PostModal showModal={showModal} handleClick={handleClick} />
+        </Container>
+      
+    </>
   );
 };
 
@@ -348,22 +369,22 @@ const SocialActions = styled.div`
 `;
 
 const Content = styled.div`
-text-align: center;
-&>img{
-  width: 30px;
-
-}
+  text-align: center;
+  & > img {
+    width: 30px;
+  }
 `;
 
 const mapStateToProps = (state) => {
-  return{
+  return {
     loading: state.articleState.loading,
     user: state.userState.user,
-  }
-}
+    articles: state.articleState.articles,
+  };
+};
 
 const mapDispatchToProps = (dispatch) => ({
- getArticles: () => dispatch(getArticleAPI())
-})
+  getArticles: () => dispatch(getArticleAPI()),
+});
 
 export default connect(mapStateToProps, mapDispatchToProps)(Main);
